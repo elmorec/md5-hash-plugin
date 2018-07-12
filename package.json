@@ -1,0 +1,21 @@
+{
+  "name": "md5-hash-plugin",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elmorec/md5-hash-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "chunkhash",
+    "hash"
+  ],
+  "author": "Elmore Cheng <elmore.c@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elmorec/md5-hash-plugin/issues"
+  },
+  "homepage": "https://github.com/elmorec/md5-hash-plugin#readme"
+}
