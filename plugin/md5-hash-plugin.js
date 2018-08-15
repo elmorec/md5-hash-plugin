@@ -4,7 +4,7 @@ module.exports = class Md5HashPlugin {
   apply(compiler) {
     compiler.hooks.compilation.tap('chunk-hash', function (compilation) {
       compilation.hooks.chunkHash.tap("chunk-hash", function (chunk, chunkHash) {
-        const source = getSource(chunk.entryModule._source ? chunk.entryModule : chunk.entryModule.modules);
+        const source = deduplicateAndConcatValue(Array.from(chunk.modulesIterable).concat(chunk.entryModule._source ? chunk.entryModule : chunk.entryModule.modules));
         const chunk_hash = md5(source);
         chunkHash.digest = function () {
           return chunk_hash;
@@ -14,12 +14,19 @@ module.exports = class Md5HashPlugin {
   }
 };
 
-function getSource(mod) {
-  if (!mod) return '';
-  if (Array.isArray(mod)) return mod.map(getSource).sort((a, b) => a.resource < b.resource ? -1 : 1).reduce((integral, i) => integral + i, '');
+function deduplicateAndConcatValue(modules) {
+  const o = {};
 
-  const _source = mod._source || {};
-  return _source._value ? _source._value.replace(/(?<=require\(['"]).*node_modules\//g, '') : '';
+  modules.forEach(m => {
+    if (m.resource)
+      o[m.resource] = (m._source && m._source._value) ? m._source._value.replace(/(?<=require\(['"]).*node_modules\//g, '') : '';
+  });
+
+  return Object.keys(o).sort(sortModule).map(key => o[key]).join('');
+}
+
+function sortModule(a, b) {
+  return a.resource < b.resource ? -1 : 1;
 }
 
 function md5(str, len = 20) {
